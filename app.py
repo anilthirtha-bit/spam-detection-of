@@ -3,31 +3,36 @@ import pickle
 
 app = Flask(__name__)
 
-model = pickle.load(open("spam_model.pkl", "rb"))
-vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
+# Load trained spam model
+with open("spam_model.pkl", "rb") as f:
+    model = pickle.load(f)
 
 @app.route("/")
 def home():
-    return {"status": "Spam Detection API Running"}
+    return jsonify({
+        "status": "running",
+        "message": "Spam Detection API"
+    })
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    data = request.get_json()
+    try:
+        data = request.get_json()
 
-    if not data or "message" not in data:
-        return jsonify({"error": "message field required"}), 400
+        if not data or "message" not in data:
+            return jsonify({"error": "message field required"}), 400
 
-    message = data["message"]
+        message = data["message"]
 
-    vector = vectorizer.transform([message])
-    prediction = model.predict(vector)[0]
+        prediction = model.predict([message])[0]
 
-    result = "spam" if prediction == 1 else "not spam"
+        return jsonify({
+            "message": message,
+            "spam": bool(prediction)
+        })
 
-    return jsonify({
-        "message": message,
-        "prediction": result
-    })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
