@@ -29,5 +29,8 @@ model.fit(X, y)
 # Save model
 with open("spam_model.pkl", "wb") as f:
     pickle.dump(model, f)
+git add spam_model.pkl
+git commit -m "Add spam model file"
+git push heroku main
 
 print("spam_model.pkl created successfully!")
