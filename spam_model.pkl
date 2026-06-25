@@ -1,0 +1,33 @@
+from sklearn.pipeline import Pipeline
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+import pickle
+
+# Sample training data
+X = [
+    "Win a free iPhone now",
+    "Claim your prize immediately",
+    "Congratulations! You won $1000",
+    "Click here to get rich fast",
+    "Meeting at 10 AM tomorrow",
+    "Please review the report",
+    "Let's have lunch today",
+    "Can you send me the document?"
+]
+
+y = [1, 1, 1, 1, 0, 0, 0, 0]  # 1 = spam, 0 = not spam
+
+# Create pipeline
+model = Pipeline([
+    ("tfidf", TfidfVectorizer()),
+    ("classifier", LogisticRegression())
+])
+
+# Train model
+model.fit(X, y)
+
+# Save model
+with open("spam_model.pkl", "wb") as f:
+    pickle.dump(model, f)
+
+print("spam_model.pkl created successfully!")
